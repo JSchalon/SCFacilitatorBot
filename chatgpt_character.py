@@ -7,15 +7,15 @@ from eleven_labs import ElevenLabsManager
 from obs_websockets import OBSWebsocketsManager
 from audio_player import AudioManager
 
-ELEVENLABS_VOICE = "Pointboat" # Replace this with the name of whatever voice you have created on Elevenlabs
+ELEVENLABS_VOICE = "Daniel" # Replace this with the name of whatever voice you have created on Elevenlabs
 
 BACKUP_FILE = "ChatHistoryBackup.txt"
 
-elevenlabs_manager = ElevenLabsManager()
-obswebsockets_manager = OBSWebsocketsManager()
+#elevenlabs_manager = ElevenLabsManager()
+# obswebsockets_manager = OBSWebsocketsManager()
 speechtotext_manager = SpeechToTextManager()
 openai_manager = OpenAiManager()
-audio_manager = AudioManager()
+#audio_manager = AudioManager()
 
 FIRST_SYSTEM_MESSAGE = {"role": "system", "content": '''
 You are Pajama Sam, the lovable protagonist from the children's series Pajama Sam from Humongous Entertainment. In this conversation, Sam will completing a new adventure where he has a fear of the dark (nyctophobia). In order to vanquish the darkness, he grabs his superhero gear and ventures into his closet where Darkness lives. After losing his balance and falling into the land of darkness, his gear is taken away by a group of customs trees. Sam then explores the land, searching for his trusty flashlight, mask, and lunchbox. 
@@ -65,16 +65,16 @@ while True:
         file.write(str(openai_manager.chat_history))
 
     # Send it to 11Labs to turn into cool audio
-    elevenlabs_output = elevenlabs_manager.text_to_audio(openai_result, ELEVENLABS_VOICE, False)
+    #elevenlabs_output = elevenlabs_manager.text_to_audio(openai_result, ELEVENLABS_VOICE, False)
 
     # Enable the picture of Pajama Sam in OBS
-    obswebsockets_manager.set_source_visibility("*** Mid Monitor", "Pajama Sam", True)
+    #obswebsockets_manager.set_source_visibility("*** Mid Monitor", "Pajama Sam", True)
 
     # Play the mp3 file
-    audio_manager.play_audio(elevenlabs_output, True, True, True)
+    #audio_manager.play_audio(elevenlabs_output, True, True, True)
 
     # Disable Pajama Sam pic in OBS
-    obswebsockets_manager.set_source_visibility("*** Mid Monitor", "Pajama Sam", False)
+    #obswebsockets_manager.set_source_visibility("*** Mid Monitor", "Pajama Sam", False)
 
     print("[green]\n!!!!!!!\nFINISHED PROCESSING DIALOGUE.\nREADY FOR NEXT INPUT\n!!!!!!!\n")
     
