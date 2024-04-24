@@ -5,7 +5,7 @@ import os
 try:
   set_api_key(os.getenv('ELEVENLABS_API_KEY'))
 except TypeError:
-  exit("Ooops! You forgot to set ELEVENLABS_API_KEY in your environment!")
+  exit("You did not set ELEVENLABS_API_KEY in your environment!")
 
 class ElevenLabsManager:
 
@@ -19,7 +19,7 @@ class ElevenLabsManager:
         audio_saved = generate(
           text=input_text,
           voice=voice,
-          model="eleven_monolingual_v1"
+          model="eleven_multilingual_v2"
         )
         if save_as_wave:
           file_name = f"___Msg{str(hash(input_text))}.wav"
@@ -34,7 +34,7 @@ class ElevenLabsManager:
         audio = generate(
           text=input_text,
           voice=voice,
-          model="eleven_monolingual_v1"
+          model="eleven_multilingual_v2"
         )
         play(audio)
 
@@ -43,7 +43,7 @@ class ElevenLabsManager:
         audio_stream = generate(
           text=input_text,
           voice=voice,
-          model="eleven_monolingual_v1",
+          model="eleven_multilingual_v2",
           stream=True
         )
         stream(audio_stream)
