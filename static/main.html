@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main</title>
+    <!--<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">-->
+    <link rel="stylesheet" href="main.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        // runs websocket, waits for update and then uses the delivered data to update the html
+        socket.on('message', function(data) {
+            console.log('Received message:', data);
+            // Update Dynamic content container
+            document.getElementById('dynamic-content').innerText = data.message;
+        });
+    </script>
+</head>
+<body>
+  <main class="app">
+    <div class="reactive-box">
+      <svg height="300" width="300" fill="none">
+        <circle class="indicator-voice" cx="150" cy="150" r="140" />
+        <circle class="indicator-loading" cx="150" cy="150" r="40" />
+      </svg>
+      <div class="indicator-mic"></div>
+    </div>
+    <div id="dynamic-content">
+      Initial message from server
+    </div>
+  </main>
+</body>
+</html>
