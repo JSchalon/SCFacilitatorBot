@@ -4,18 +4,16 @@ from rich import print
 from azure_speech_to_text import SpeechToTextManager
 from openai_chat import OpenAiManager
 from eleven_labs import ElevenLabsManager
-from obs_websockets import OBSWebsocketsManager
 from audio_player import AudioManager
 
 ELEVENLABS_VOICE = "Daniel" # Replace this with the name of whatever voice you have created on Elevenlabs
 
 BACKUP_FILE = "ChatHistoryBackup.txt"
 
-elevenlabs_manager = ElevenLabsManager()
-# obswebsockets_manager = OBSWebsocketsManager()
+#elevenlabs_manager = ElevenLabsManager()
 speechtotext_manager = SpeechToTextManager()
 openai_manager = OpenAiManager()
-audio_manager = AudioManager()
+#audio_manager = AudioManager()
 
 FIRST_SYSTEM_MESSAGE = {"role": "system", "content": '''
 Du är en diskussionsledare på ett språkcafé. Ditt jobb är att generera lämpliga diskussionsämnen för vuxna språkinlärare av svenska språket som kan användas i språkcafé-miljön. Målet med detta är att främja diskussioner, samt hjälpa människor i olika åldrar, kön och kulturell bakgrund.
@@ -23,7 +21,7 @@ Du är en diskussionsledare på ett språkcafé. Ditt jobb är att generera läm
 Först kommer du att bli ombedd att ange ett eller två lämpliga diskussionsämnen att välja mellan. Efter det kan besökarna på språkcaféet ge dig det svar eller den konsensus som människor har uppnått, eller be dig om nya diskussionsämnen.
                         
 När du svarar måste du följa följande regler: 
-1) always respond in swedish, unless specifically asked to respond in another language
+1) Alltid svara på svenska, såvida du inte uttryckligen ombeds att svara på ett annat språk
 2) Ge korta svar, max 1-2 paragrafer. 
 3) Håll dig alltid till din karaktär, oavsett vad som händer.
 4) Om du blir tillfrågad, ge några förslag på lämpliga diskussionsämnen.
@@ -59,13 +57,13 @@ while True:
         file.write(str(openai_manager.chat_history))
 
     # Send it to 11Labs to turn into cool audio
-    elevenlabs_output = elevenlabs_manager.text_to_audio(openai_result, ELEVENLABS_VOICE, False)
+    #elevenlabs_output = elevenlabs_manager.text_to_audio(openai_result, ELEVENLABS_VOICE, False)
 
     # Enable the picture of Pajama Sam in OBS
     #obswebsockets_manager.set_source_visibility("*** Mid Monitor", "Pajama Sam", True)
 
     # Play the mp3 file
-    audio_manager.play_audio(elevenlabs_output, True, True, True)
+    #audio_manager.play_audio(elevenlabs_output, True, True, True)
 
     # Disable Pajama Sam pic in OBS
     #obswebsockets_manager.set_source_visibility("*** Mid Monitor", "Pajama Sam", False)
