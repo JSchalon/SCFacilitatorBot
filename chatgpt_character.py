@@ -5,6 +5,7 @@ from azure_speech_to_text import SpeechToTextManager
 from openai_chat import OpenAiManager
 from eleven_labs import ElevenLabsManager
 from audio_player import AudioManager
+import socketio
 
 ELEVENLABS_VOICE = "Daniel" # Replace this with the name of whatever voice you have created on Elevenlabs
 
@@ -14,6 +15,20 @@ BACKUP_FILE = "ChatHistoryBackup.txt"
 speechtotext_manager = SpeechToTextManager()
 openai_manager = OpenAiManager()
 #audio_manager = AudioManager()
+
+# Create Flask-SocketIO server
+sio = socketio.Client()
+
+@sio.event
+def connect():
+    print('[yellow]Connected to server')
+
+@sio.event
+def disconnect():
+    print('[yellow]Disconnected from server')
+
+# Connect to the Flask-SocketIO server
+sio.connect('http://127.0.0.1:5000')
 
 FIRST_SYSTEM_MESSAGE = {"role": "system", "content": '''
 Du är en diskussionsledare på ett språkcafé. Ditt jobb är att generera lämpliga diskussionsämnen för vuxna språkinlärare av svenska språket som kan användas i språkcafé-miljön. Målet med detta är att främja diskussioner, samt hjälpa människor i olika åldrar, kön och kulturell bakgrund.
@@ -33,7 +48,9 @@ När du svarar måste du följa följande regler:
 Okej, låt samtalet börja!'''}
 openai_manager.chat_history.append(FIRST_SYSTEM_MESSAGE)
 
+print("[yellow]Open http://127.0.0.1:5000/ to access graphical webinterface!")
 print("[green]Starting the loop, press F4 to begin")
+
 while True:
     # Wait until user presses "f4" key
     if keyboard.read_key() != "f4":
@@ -41,13 +58,18 @@ while True:
         continue
 
     print("[green]User pressed F4 key! Now listening to your microphone:")
+    sio.emit('message', '{"type": "animate", "msg": "listen"}')
 
     # Get question from mic
     mic_result = speechtotext_manager.speechtotext_from_mic_continuous()
     
     if mic_result == '':
+        sio.emit('message', '{"type": "animate", "msg": "speak"}')
+        sio.emit('message', '{"type": "display", "msg": "Tyvärr, jag förstod inte det. Försök igen."}')
         print("[red]Did not receive any input from your microphone!")
         continue
+
+    sio.emit('message', '{"type": "animate", "msg": "load"}')
 
     # Send question to OpenAi
     openai_result = openai_manager.chat_with_history(mic_result)
@@ -64,6 +86,9 @@ while True:
 
     # Play the mp3 file
     #audio_manager.play_audio(elevenlabs_output, True, True, True)
+    sio.emit('message', '{"type": "animate", "msg": "speak"}')
+    message_string = '{"type": "display", "msg": "' + openai_result.replace('"', '\\"') + '"}'
+    sio.emit('message', message_string)
 
     # Disable Pajama Sam pic in OBS
     #obswebsockets_manager.set_source_visibility("*** Mid Monitor", "Pajama Sam", False)

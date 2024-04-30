@@ -1,3 +1,11 @@
+:root {
+  --bg-main: #223843;
+  --text-box: #D2694B;
+  --bot-color: #EFF1F3;
+  --bot-glow: #ffffff88;
+  --text-main: #DDF0FF;
+}
+
 body {
   padding: 0;
   margin: 0;
@@ -7,17 +15,10 @@ body {
 }
 
 h1 {
-  font-size: 1.3em;
+  font-size: 1.4em;
   margin: 1em;
   line-height: 1.6;
   font-weight: 500;
-}
-
-:root {
-  --bg-main: rgb(92, 121, 85);
-  --bg-dark: rgb(58, 83, 52);
-  --bright-main: rgb(212, 212, 212);
-  --bright-dark: rgb(158, 158, 158);
 }
 
 .app {
@@ -93,8 +94,8 @@ svg * {
 }
 
 .glow-group {
-  filter: drop-shadow( 0px -2px 10px var(--bright-dark));
-  stroke: var(--bright-main);
+  filter: drop-shadow( 0px -2px 10px var(--bot-glow));
+  stroke: var(--bot-color);
 }
 
 .indicator-voice {
@@ -119,12 +120,12 @@ svg * {
 }
 
 .antenna-top {
-  fill: var(--bright-main);
+  fill: var(--bot-color);
   stroke-width: 10;
 }
 
 .bot-eye {
-  fill: var(--bright-main);
+  fill: var(--bot-color);
   stroke-width: 5;
 }
 
@@ -139,7 +140,7 @@ svg * {
 }
 
 div {
-  color: var(--bright-main);
+  color: var(--text-main);
 }
 
 .bot-containter {
@@ -161,8 +162,8 @@ div {
   min-height: 20vh;
   max-height: calc(100vh - 270px);
   width: 100%;
-  background-color: var(--bg-dark);
+  background-color: var(--text-box);
   border-radius: 20px;
-  box-shadow: 0px 10px 41px -18px rgba(0,0,0,0.75);
+  box-shadow: 0px 10px 41px -15px rgba(56, 28, 15, 0.75);
   transition: min-height 0.15s ease-out;
 }

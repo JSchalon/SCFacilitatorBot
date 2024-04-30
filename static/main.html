@@ -32,7 +32,7 @@
                 document.getElementById("bot-svg").classList.add("loading")
                 textbox.textContent = "Vänligen vänta...";
               } else if (data.msg == "listen") {
-                textbox.textContent = "Jag lyssnar...";
+                textbox.textContent = "Jag lyssnar. Vänta lite efter att du har talat, och tryck på 'P' för att avsluta.";
               }
             } else if (data.type= "display") {
               textbox.textContent = "";
@@ -41,6 +41,8 @@
               let timer = setInterval(function() {
                 if (index >= words.length) {
                   clearInterval(timer);
+                  document.getElementById("bot-svg").classList.remove("speaking")
+                  document.getElementById("bot-svg").classList.remove("loading")
                   return;
                 }
                 textbox.textContent += words[index];
@@ -74,7 +76,7 @@
     </div>
     <div class="text-container">
       <div class="response-box">
-        <h1 id="dynamic-content">Hej hej!</h1>
+        <h1 id="dynamic-content">Hej hej! Ni kan använda "F4" för att börja prata med mig!</h1>
       </div>
     </div>
   </main>
