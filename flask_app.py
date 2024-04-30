@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO
+import json
 
 app = Flask(__name__, template_folder='static')
 socketio = SocketIO(app)
@@ -11,8 +12,11 @@ def index():
 @socketio.on('message')
 def handle_message(message):
     print(message)
+    print(type(message))
+    json_object = json.loads(message)
+    if  json_object.get("type") == "call" and json_object.get("msg"):
     # Broadcast the received message to all clients
-    socketio.emit('message', {'message': message}, namespace='/')
+        socketio.emit('message', {'message': json_object}, namespace='/')
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
