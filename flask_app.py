@@ -12,11 +12,10 @@ def index():
 @socketio.on('message')
 def handle_message(message):
     print(message)
-    print(type(message))
     json_object = json.loads(message)
-    if  json_object.get("type") == "call" and json_object.get("msg"):
+    if  (json_object.get("type") == "animate" or json_object.get("type") == "display") and json_object.get("msg"):
     # Broadcast the received message to all clients
-        socketio.emit('message', {'message': json_object}, namespace='/')
+        socketio.emit('message', json_object, namespace='/')
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

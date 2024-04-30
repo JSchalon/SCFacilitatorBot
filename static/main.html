@@ -14,11 +14,40 @@
     <script>
         var socket = io();
 
-        // runs websocket, waits for update and then uses the delivered data to update the html
+        // runs websocket, waits for update and then uses the delivered data to update the app
         socket.on('message', function(data) {
-            console.log('Received message:', data);
-            // Update Dynamic content container
-            document.getElementById('dynamic-content').innerText = data.message;
+            let textbox = document.getElementById('dynamic-content');
+          
+            // change face based on the request from python, matching either the loading or speaking phase of the app
+            if (data.type == "animate") {
+              console.log(data.msg)
+              if (data.msg == "speak") {
+                document.getElementById("bot-svg").classList.add("speaking")
+                document.getElementById("bot-svg").classList.remove("loading")
+              } else if (data.msg == "base") {
+                document.getElementById("bot-svg").classList.remove("speaking")
+                document.getElementById("bot-svg").classList.remove("loading")
+              } else if (data.msg == "load") {
+                document.getElementById("bot-svg").classList.remove("speaking")
+                document.getElementById("bot-svg").classList.add("loading")
+              }
+            } else if (data.type= "display") {
+              textbox.textContent = "";
+              let index = 0;
+              let words = data.msg.split(/\s+/);
+              let timer = setInterval(function() {
+                if (index >= words.length) {
+                  clearInterval(timer);
+                  return;
+                }
+                textbox.textContent += words[index];
+                index++;
+                if (index < words.length) {
+                  // Add a space between words
+                  textbox.textContent += ' ';
+                }
+              }, 200);
+            }
         });
     </script>
 </head>
@@ -26,12 +55,12 @@
   <main class="app">
     <div class="bot-containter">
       <svg height="350" width="500" fill="none">
-        <g class="glow-group">
+        <g class="glow-group" id="bot-svg">
           <path class="antenna-path" d="M 65 40 L 95 80 L 115 50 L 145 90"></path>
           <circle class="indicator-voice speaking" cx="250" cy="175" r="140" />
-          <!-- <circle class="indicator-loading" cx="225" cy="175" r="40" /> -->
-          <circle class="antenna-top" cx="65" cy="40" r="15" />
-          <g class="bot-face">
+          <!-- <circle class="indicator-loading invis" cx="250" cy="175" r="40" id="loader"/> -->
+          <circle class="antenna-top" cx="65" cy="40" r="15"/>
+          <g class="bot-face" id="bot-face">
             <circle class="bot-eye" cx="200" cy="130" r="15" />
             <circle class="bot-eye" cx="300" cy="130" r="15" />
             <path class="bot-mouth" d="M 210 185 L 230 205 L 250 185 L 270 205 L 290 185"></path>
@@ -42,7 +71,7 @@
     </div>
     <div class="text-container">
       <div class="response-box">
-        <h1 id="dynamic-content">Initial message from server</h1>
+        <h1 id="dynamic-content">Hej hej!</h1>
       </div>
     </div>
   </main>

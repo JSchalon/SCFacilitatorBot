@@ -1,6 +1,6 @@
 import socketio
 
-# Connect to the Flask-SocketIO server
+# Create Flask-SocketIO server
 sio = socketio.Client()
 
 @sio.event
