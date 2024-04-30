@@ -11,10 +11,10 @@ ELEVENLABS_VOICE = "Daniel" # Replace this with the name of whatever voice you h
 
 BACKUP_FILE = "ChatHistoryBackup.txt"
 
-#elevenlabs_manager = ElevenLabsManager()
+elevenlabs_manager = ElevenLabsManager()
 speechtotext_manager = SpeechToTextManager()
 openai_manager = OpenAiManager()
-#audio_manager = AudioManager()
+audio_manager = AudioManager()
 
 # Create Flask-SocketIO server
 sio = socketio.Client()
@@ -51,6 +51,9 @@ openai_manager.chat_history.append(FIRST_SYSTEM_MESSAGE)
 print("[yellow]Open http://127.0.0.1:5000/ to access graphical webinterface!")
 print("[green]Starting the loop, press F4 to begin")
 
+sio.emit('message', '{"type": "animate", "msg": "speak"}')
+sio.emit('message', '{"type": "display", "msg": "Nu kan ni använda F4 för att börja prata med mig!"}')
+
 while True:
     # Wait until user presses "f4" key
     if keyboard.read_key() != "f4":
@@ -79,16 +82,13 @@ while True:
         file.write(str(openai_manager.chat_history))
 
     # Send it to 11Labs to turn into cool audio
-    #elevenlabs_output = elevenlabs_manager.text_to_audio(openai_result, ELEVENLABS_VOICE, False)
-
-    # Enable the picture of Pajama Sam in OBS
-    #obswebsockets_manager.set_source_visibility("*** Mid Monitor", "Pajama Sam", True)
-
-    # Play the mp3 file
-    #audio_manager.play_audio(elevenlabs_output, True, True, True)
+    elevenlabs_output = elevenlabs_manager.text_to_audio(openai_result, ELEVENLABS_VOICE, False)
     sio.emit('message', '{"type": "animate", "msg": "speak"}')
     message_string = '{"type": "display", "msg": "' + openai_result.replace('"', '\\"') + '"}'
     sio.emit('message', message_string)
+    # Play the mp3 file
+    audio_manager.play_audio(elevenlabs_output, True, True, True)
+    
 
     # Disable Pajama Sam pic in OBS
     #obswebsockets_manager.set_source_visibility("*** Mid Monitor", "Pajama Sam", False)
