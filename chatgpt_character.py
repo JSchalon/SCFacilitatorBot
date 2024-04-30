@@ -7,7 +7,7 @@ from eleven_labs import ElevenLabsManager
 from audio_player import AudioManager
 import socketio
 
-ELEVENLABS_VOICE = "Daniel" # Replace this with the name of whatever voice you have created on Elevenlabs
+ELEVENLABS_VOICE = "Freya" # Replace this with the name of whatever voice you have created on Elevenlabs
 
 BACKUP_FILE = "ChatHistoryBackup.txt"
 
@@ -33,7 +33,7 @@ sio.connect('http://127.0.0.1:5000')
 FIRST_SYSTEM_MESSAGE = {"role": "system", "content": '''
 Du är en diskussionsledare på ett språkcafé. Ditt jobb är att generera lämpliga diskussionsämnen för vuxna språkinlärare av svenska språket som kan användas i språkcafé-miljön. Målet med detta är att främja diskussioner, samt hjälpa människor i olika åldrar, kön och kulturell bakgrund.
                         
-Först kommer du att bli ombedd att ange ett eller två lämpliga diskussionsämnen att välja mellan. Efter det kan besökarna på språkcaféet ge dig det svar eller den konsensus som människor har uppnått, eller be dig om nya diskussionsämnen.
+Först kommer du att bli ombedd att ange ett lämpliga diskussionsämne att välja mellan. Efter det kan besökarna på språkcaféet ge dig det svar eller den konsensus som människor har uppnått, eller be dig om nya diskussionsämnen.
                         
 När du svarar måste du följa följande regler: 
 1) Alltid svara på svenska, såvida du inte uttryckligen ombeds att svara på ett annat språk
