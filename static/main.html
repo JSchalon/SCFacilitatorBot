@@ -30,6 +30,9 @@
               } else if (data.msg == "load") {
                 document.getElementById("bot-svg").classList.remove("speaking")
                 document.getElementById("bot-svg").classList.add("loading")
+                textbox.textContent = "Vänligen vänta...";
+              } else if (data.msg == "listen") {
+                textbox.textContent = "Jag lyssnar...";
               }
             } else if (data.type= "display") {
               textbox.textContent = "";
