@@ -12,47 +12,67 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script>
-        var socket = io();
+        const socket = io();
         // runs websocket, waits for update and then uses the delivered data to update the app
         socket.on('message', function(data) {
             
           
             // change face based on the request from python, matching either the loading or speaking phase of the app
             if (data.type == "animate") {
-              console.log(data.msg)
+              const svgElem = document.getElementById("bot-svg")
+              const botMic = document.getElementById("bot-mic")
+              const faceScaler = document.getElementById("bot-face-scaler")
+              //speak -> animate face
               if (data.msg == "speak") {
-                document.getElementById("bot-svg").classList.add("speaking")
-                document.getElementById("bot-svg").classList.remove("loading")
-                document.getElementById("bot-face-scaler").classList.remove("hidden")
-                document.getElementById("bot-mic").classList.remove("listening")
-              } else if (data.msg == "base") {
-                document.getElementById("bot-svg").classList.remove("speaking")
-                document.getElementById("bot-svg").classList.remove("loading")
-                document.getElementById("bot-face-scaler").classList.remove("hidden")
-                document.getElementById("bot-mic").classList.remove("listening")
-              } else if (data.msg == "load") {
-                document.getElementById("bot-svg").classList.remove("speaking")
-                document.getElementById("bot-svg").classList.add("loading")
-                document.getElementById("bot-face-scaler").classList.remove("hidden")
-                document.getElementById("bot-mic").classList.remove("listening")
-                write("Vänligen vänta...")
-              } else if (data.msg == "listen") {
-                document.getElementById("bot-svg").classList.remove("speaking")
-                document.getElementById("bot-svg").classList.remove("loading")
-                document.getElementById("bot-face-scaler").classList.add("hidden")
-                document.getElementById("bot-mic").classList.add("listening")
 
-                write("Jag lyssnar. Vänta lite efter att du har talat, och tryck på 'P' för att avsluta.")
+                //get the current animation angle. Important to smoothly transition between loading and speaking
+                const transform = window.getComputedStyle(document.getElementById("bot-face")).transform
+                console.log(transform)
+                if (transform != "none") {
+                  const matrixValues = transform.match(/matrix.*\((.+)\)/)[1].split(', ');
+                  let angle = Math.round(Math.atan2(parseFloat(matrixValues[1]), parseFloat(matrixValues[0])) * (180/Math.PI));              
+                  document.getElementById("bot-face").style.transform = "rotate(" + angle + "deg)"
+                }
+
+                svgElem.classList.remove("loading")
+                botMic.classList.remove("listening")
+                faceScaler.classList.remove("hidden")
+                setTimeout( function () {
+                  svgElem.classList.add("speaking")
+                }, 10)
+                
+              } else if (data.msg == "base") {
+                svgElem.classList.remove("speaking")
+                svgElem.classList.remove("loading")
+                faceScaler.classList.remove("hidden")
+                botMic.classList.remove("listening")
+              } else if (data.msg == "load") {
+                svgElem.classList.remove("speaking")
+                faceScaler.classList.remove("hidden")
+                botMic.classList.remove("listening")
+                svgElem.classList.add("loading")
+                write("Vänligen vänta...", false, true)
+              } else if (data.msg == "listen") {
+                svgElem.classList.remove("speaking")
+                svgElem.classList.remove("loading")
+                faceScaler.classList.add("hidden")
+                botMic.classList.add("listening")
+
+                write("Jag lyssnar. Vänta lite efter att du har talat, och tryck på 'P' för att avsluta.", false, true)
               }
             } else if (data.type= "display") {
               let result = write(data.msg, true);
             }
-            
-            function write (text, clear) {
+
+            function write (text, clear, fast) {
               let textbox = document.getElementById('dynamic-content');
               textbox.textContent = "";
                   let index = 0;
                   let words = text.split(/\s+/);
+                  let speed = 400
+                  if (fast) {
+                    speed = 200
+                  }
                   let timer = setInterval(function() {
                     if (index >= words.length) {
                       clearInterval(timer);
@@ -70,7 +90,7 @@
                       // Add a space between words
                       textbox.textContent += ' ';
                     }
-                  }, 400);
+                  }, speed);
             }
         });
     </script>

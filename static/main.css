@@ -47,6 +47,14 @@ svg * {
 
 #bot-svg.loading .bot-face { 
   animation: loading-face 4s linear infinite;
+}
+
+.glow-group.speaking .bot-face {
+  transform: rotate(0deg)!important;
+}
+
+.bot-face {
+  transition: transform .3s ease;
   transform-origin: center 40%;
 }
 
