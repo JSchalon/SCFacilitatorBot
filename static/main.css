@@ -42,7 +42,7 @@ svg * {
 
 .glow-group.speaking {
   /* transition: transform ease-out .2s; */
-  animation: speak .4s linear infinite;
+  animation: speak .3s linear infinite;
 }
 
 #bot-svg.loading .bot-face { 
@@ -106,21 +106,16 @@ svg * {
   transform: rotate(150deg);
 }
 
-.indicator-loading {
-  fill: none;
-  stroke-width: 8;
-  stroke-dasharray: 250;
-  stroke-dashoffset: 1000;
-  animation: rotate 7s linear infinite;
-  transform: scale(1.4);
-}
-
 .antenna-path {
   stroke-width: 10;
 }
 
 .antenna-top {
   fill: var(--bot-color);
+  stroke-width: 10;
+}
+
+.whisker {
   stroke-width: 10;
 }
 
@@ -133,10 +128,51 @@ svg * {
   stroke-width: 10;
 }
 
-@keyframes rotate {
-  to {
-    stroke-dashoffset: 0;
+.bot-face-scaler {
+  transition: transform .3s ease-out;
+}
+
+.bot-face-scaler.hidden {
+  transform: scale(0) rotate(180deg);
+  transition: transform .3s ease-in;
+}
+
+.bot-mic {
+  transition: transform .3s ease-in;
+  transform: scale(0) rotate(-180deg);
+}
+
+.bot-mic.listening {
+  transform: none;
+  transition: transform .3s ease-out;
+}
+
+.bot-mic-scaler {
+  animation: wobble 2s linear infinite;
+}
+
+@keyframes wobble {
+  0% {
+    transform: none;
   }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: none;
+  }
+}
+
+.mic-ball {
+  fill: var(--bot-color);
+  stroke-width: 10;
+}
+
+.mic-stand {
+  stroke-width: 10;
+  fill: none;
 }
 
 div {
@@ -151,7 +187,8 @@ div {
 
 .text-container {
   height: calc(100vh - 257px);
-  width: 90%;
+  width: 70%;
+  min-width: 500px;
 }
 
 .response-box {

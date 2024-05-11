@@ -13,10 +13,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script>
         var socket = io();
-
         // runs websocket, waits for update and then uses the delivered data to update the app
         socket.on('message', function(data) {
-            let textbox = document.getElementById('dynamic-content');
+            
           
             // change face based on the request from python, matching either the loading or speaking phase of the app
             if (data.type == "animate") {
@@ -24,34 +23,54 @@
               if (data.msg == "speak") {
                 document.getElementById("bot-svg").classList.add("speaking")
                 document.getElementById("bot-svg").classList.remove("loading")
+                document.getElementById("bot-face-scaler").classList.remove("hidden")
+                document.getElementById("bot-mic").classList.remove("listening")
               } else if (data.msg == "base") {
                 document.getElementById("bot-svg").classList.remove("speaking")
                 document.getElementById("bot-svg").classList.remove("loading")
+                document.getElementById("bot-face-scaler").classList.remove("hidden")
+                document.getElementById("bot-mic").classList.remove("listening")
               } else if (data.msg == "load") {
                 document.getElementById("bot-svg").classList.remove("speaking")
                 document.getElementById("bot-svg").classList.add("loading")
-                textbox.textContent = "Vänligen vänta...";
+                document.getElementById("bot-face-scaler").classList.remove("hidden")
+                document.getElementById("bot-mic").classList.remove("listening")
+                write("Vänligen vänta...")
               } else if (data.msg == "listen") {
-                textbox.textContent = "Jag lyssnar. Vänta lite efter att du har talat, och tryck på 'P' för att avsluta.";
+                document.getElementById("bot-svg").classList.remove("speaking")
+                document.getElementById("bot-svg").classList.remove("loading")
+                document.getElementById("bot-face-scaler").classList.add("hidden")
+                document.getElementById("bot-mic").classList.add("listening")
+
+                write("Jag lyssnar. Vänta lite efter att du har talat, och tryck på 'P' för att avsluta.")
               }
             } else if (data.type= "display") {
+              let result = write(data.msg, true);
+            }
+            
+            function write (text, clear) {
+              let textbox = document.getElementById('dynamic-content');
               textbox.textContent = "";
-              let index = 0;
-              let words = data.msg.split(/\s+/);
-              let timer = setInterval(function() {
-                if (index >= words.length) {
-                  clearInterval(timer);
-                  document.getElementById("bot-svg").classList.remove("speaking")
-                  document.getElementById("bot-svg").classList.remove("loading")
-                  return;
-                }
-                textbox.textContent += words[index];
-                index++;
-                if (index < words.length) {
-                  // Add a space between words
-                  textbox.textContent += ' ';
-                }
-              }, 400);
+                  let index = 0;
+                  let words = text.split(/\s+/);
+                  let timer = setInterval(function() {
+                    if (index >= words.length) {
+                      clearInterval(timer);
+                      if (clear) {
+                        document.getElementById("bot-svg").classList.remove("speaking")
+                        document.getElementById("bot-svg").classList.remove("loading")
+                        document.getElementById("bot-face-scaler").classList.remove("hidden")
+                        document.getElementById("bot-mic").classList.remove("listening")
+                      }
+                      return true;
+                    }
+                    textbox.textContent += words[index];
+                    index++;
+                    if (index < words.length) {
+                      // Add a space between words
+                      textbox.textContent += ' ';
+                    }
+                  }, 400);
             }
         });
     </script>
@@ -62,13 +81,29 @@
       <svg height="350" width="500" fill="none">
         <g class="glow-group" id="bot-svg">
           <path class="antenna-path" d="M 65 40 L 95 80 L 115 50 L 145 90"></path>
-          <circle class="indicator-voice speaking" cx="250" cy="175" r="140" />
-          <!-- <circle class="indicator-loading invis" cx="250" cy="175" r="40" id="loader"/> -->
           <circle class="antenna-top" cx="65" cy="40" r="15"/>
-          <g class="bot-face" id="bot-face">
-            <circle class="bot-eye" cx="200" cy="130" r="15" />
-            <circle class="bot-eye" cx="300" cy="130" r="15" />
-            <path class="bot-mouth" d="M 210 185 L 230 205 L 250 185 L 270 205 L 290 185"></path>
+
+          <path class="whisker" d="M 110 175 L 80 175"></path>
+          <path class="whisker" d="M 114.8 211.2 L 85.8 219"></path>
+          <path class="whisker" d="M 115.2 138.8 L 85.4 131"></path>
+
+          <path class="whisker" d="M 390 175 L 420 175"></path>
+          <path class="whisker" d="M 384.8 211.2 L 414.6 219"></path>
+          <path class="whisker" d="M 384.8 138.8 L 414.6 131"></path>
+          
+          <circle class="indicator-voice speaking" cx="250" cy="175" r="140" />
+          <g class="bot-face-scaler" id="bot-face-scaler">
+            <g class="bot-face" id="bot-face">
+              <circle class="bot-eye" cx="200" cy="130" r="15" />
+              <circle class="bot-eye" cx="300" cy="130" r="15" />
+              <path class="bot-mouth" d="M 210 185 L 230 205 L 250 185 L 270 205 L 290 185"></path>
+            </g>
+          </g>
+          <g class="bot-mic" id="bot-mic">
+            <g class="bot-mic-scaler">
+              <rect class="mic-ball" x="235" y="115" width="30" height="50" ry="15" rx="15"></rect>
+              <path class="mic-stand"  d=" M 280 150 A 30 30 0 0 1 220 150 M 250 180 L 250 210 M 230 210 L 270 210" />
+            </g>
           </g>
         </g>
       </svg>

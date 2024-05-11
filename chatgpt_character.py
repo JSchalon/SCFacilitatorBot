@@ -49,18 +49,18 @@ Okej, låt samtalet börja!'''}
 openai_manager.chat_history.append(FIRST_SYSTEM_MESSAGE)
 
 print("[yellow]Open http://127.0.0.1:5000/ to access graphical webinterface!")
-print("[green]Starting the loop, press F4 to begin")
+print("[green]Starting the loop, press S to begin")
 
 sio.emit('message', '{"type": "animate", "msg": "speak"}')
-sio.emit('message', '{"type": "display", "msg": "Nu kan ni använda F4 för att börja prata med mig!"}')
+sio.emit('message', '{"type": "display", "msg": "Nu kan ni använda \'S\' för att börja prata med mig!"}')
 
 while True:
-    # Wait until user presses "f4" key
-    if keyboard.read_key() != "f4":
+    # Wait until user presses "S" key
+    if keyboard.read_key() != "s":
         time.sleep(0.1)
         continue
 
-    print("[green]User pressed F4 key! Now listening to your microphone:")
+    print("[green]User pressed S key! Now listening to your microphone:")
     sio.emit('message', '{"type": "animate", "msg": "listen"}')
 
     # Get question from mic
