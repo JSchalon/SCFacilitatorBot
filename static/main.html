@@ -12,7 +12,10 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script>
-        const socket = io();
+        const socket = io()
+        let history = {}
+        let historyIndex = 0
+        let historyPosition = -1
         // runs websocket, waits for update and then uses the delivered data to update the app
         socket.on('message', function(data) {
             
@@ -22,77 +25,139 @@
               const svgElem = document.getElementById("bot-svg")
               const botMic = document.getElementById("bot-mic")
               const faceScaler = document.getElementById("bot-face-scaler")
+              svgElem.classList.remove("speaking")
+              faceScaler.classList.remove("hidden")
+              botMic.classList.remove("listening")
+
               //speak -> animate face
               if (data.msg == "speak") {
-
                 //get the current animation angle. Important to smoothly transition between loading and speaking
                 const transform = window.getComputedStyle(document.getElementById("bot-face")).transform
                 console.log(transform)
                 if (transform != "none") {
-                  const matrixValues = transform.match(/matrix.*\((.+)\)/)[1].split(', ');
-                  let angle = Math.round(Math.atan2(parseFloat(matrixValues[1]), parseFloat(matrixValues[0])) * (180/Math.PI));              
+                  const matrixValues = transform.match(/matrix.*\((.+)\)/)[1].split(', ')
+                  let angle = Math.round(Math.atan2(parseFloat(matrixValues[1]), parseFloat(matrixValues[0])) * (180/Math.PI))           
                   document.getElementById("bot-face").style.transform = "rotate(" + angle + "deg)"
                 }
-
                 svgElem.classList.remove("loading")
-                botMic.classList.remove("listening")
-                faceScaler.classList.remove("hidden")
                 setTimeout( function () {
                   svgElem.classList.add("speaking")
+                  document.getElementById("bot-face").style.transform = "none"
                 }, 10)
-                
+              
+              //neutral animation
               } else if (data.msg == "base") {
-                svgElem.classList.remove("speaking")
                 svgElem.classList.remove("loading")
-                faceScaler.classList.remove("hidden")
-                botMic.classList.remove("listening")
+              
+              //loading animation
               } else if (data.msg == "load") {
-                svgElem.classList.remove("speaking")
-                faceScaler.classList.remove("hidden")
-                botMic.classList.remove("listening")
                 svgElem.classList.add("loading")
-                write("Vänligen vänta...", false, true)
+                write("Vänligen vänta...", false, 200)
+              
+              // listening animation
               } else if (data.msg == "listen") {
-                svgElem.classList.remove("speaking")
                 svgElem.classList.remove("loading")
                 faceScaler.classList.add("hidden")
                 botMic.classList.add("listening")
-
-                write("Jag lyssnar. Vänta lite efter att du har talat, och tryck på 'P' för att avsluta.", false, true)
+                if (data.switch) {
+                  addSlide()
+                }
+                write("Jag lyssnar. Vänta lite efter att du har talat, och tryck på 'P' för att avsluta.", false, 200)
               }
+            //display new message
             } else if (data.type= "display") {
-              let result = write(data.msg, true);
+              let result = write(data.msg, true, 400);
             }
 
-            function write (text, clear, fast) {
-              let textbox = document.getElementById('dynamic-content');
-              textbox.textContent = "";
-                  let index = 0;
-                  let words = text.split(/\s+/);
-                  let speed = 400
-                  if (fast) {
-                    speed = 200
+
+            /**
+             * writes a text into the current textbox
+             * @text the text to display
+             * @clear defines wether or not the animation should be cleared after (relevant for speaking) 
+             * @speed the delay between displaying words (lower -> faster)
+            */
+            function write (text, clear, speed) {
+              //get and reset text box
+              let textbox = document.getElementById('dynamic-content-current')
+              textbox.textContent = ""
+
+              //set index and get the seperate words
+              let index = 0
+              let words = text.split(/\s+/)
+
+              //set interval until text is fully displayed
+              let timer = setInterval(function() {
+                // no more words -> finish
+                if (index >= words.length) {
+                  clearInterval(timer)
+                  //append text to history and clear animation if desired
+                  if (clear) {
+                    history[historyIndex] = text
+                    historyIndex++
+                    historyPosition = historyIndex - 1
+                    if (historyIndex >= 2) {
+                      document.getElementById("dynamic-content-last").parentElement.classList.add("visible")
+                      document.getElementById("dynamic-content-next").parentElement.classList.remove("visible")
+                      document.getElementById("dynamic-content-last").textContent = history[historyIndex - 2]
+                    }
+                    document.getElementById("bot-svg").classList.remove("speaking")
+                    document.getElementById("bot-svg").classList.remove("loading")
+                    document.getElementById("bot-face-scaler").classList.remove("hidden")
+                    document.getElementById("bot-mic").classList.remove("listening")
                   }
-                  let timer = setInterval(function() {
-                    if (index >= words.length) {
-                      clearInterval(timer);
-                      if (clear) {
-                        document.getElementById("bot-svg").classList.remove("speaking")
-                        document.getElementById("bot-svg").classList.remove("loading")
-                        document.getElementById("bot-face-scaler").classList.remove("hidden")
-                        document.getElementById("bot-mic").classList.remove("listening")
-                      }
-                      return true;
-                    }
-                    textbox.textContent += words[index];
-                    index++;
-                    if (index < words.length) {
-                      // Add a space between words
-                      textbox.textContent += ' ';
-                    }
-                  }, speed);
+                  console.log(history)
+                  return true;
+                }
+                //append next word
+                textbox.textContent += words[index]
+                index++
+                if (index < words.length) {
+                  // Add a space between words
+                  textbox.textContent += ' '
+                }
+              }, speed)
             }
         });
+
+        function accessHistory(forward) {
+          console.log(forward)
+          console.log(historyPosition)
+          if (forward && historyPosition < historyIndex - 1) {
+            historyPosition++
+            document.getElementById("dynamic-content-last").parentElement.classList.add("visible")
+            document.getElementById("dynamic-content-last").textContent = history[historyPosition - 1]
+            // show last
+            // give last + 1
+            document.getElementById("dynamic-content-current").textContent = history[historyPosition]
+            // give current + 1
+            if (historyPosition < historyIndex - 1) {
+              document.getElementById("dynamic-content-next").textContent = history[historyPosition + 1]
+            } else {
+              console.log("here")
+              document.getElementById("dynamic-content-next").parentElement.classList.remove("visible")
+            }
+            // give next + 1, unless pos == index -> remove next
+            // change historyposition
+            
+          } else if (!forward && historyPosition > 0) {
+            historyPosition--
+            document.getElementById("dynamic-content-next").parentElement.classList.add("visible")
+            if (historyPosition > 0) {
+              document.getElementById("dynamic-content-last").textContent = history[historyPosition - 1]
+            } else {
+              document.getElementById("dynamic-content-last").parentElement.classList.remove("visible")
+            }
+            
+            document.getElementById("dynamic-content-next").textContent = history[historyPosition + 1]
+            document.getElementById("dynamic-content-current").textContent = history[historyPosition]
+            // give last - 1
+            // give current - 1
+            // show next
+            // give next - 1
+            // if historyPosition == 0 -> remove last
+            // change history position
+          }
+        }
     </script>
 </head>
 <body>
@@ -130,8 +195,14 @@
       <div class="indicator-mic"></div>
     </div>
     <div class="text-container">
-      <div class="response-box">
-        <h1 id="dynamic-content">Hej hej!</h1>
+      <div class="response-box" onclick="accessHistory(false)">
+        <h1 id="dynamic-content-last">1st </h1>
+      </div>
+      <div class="response-box" onclick="accessHistory(true)">
+        <h1 id="dynamic-content-next">2nd</h1>
+      </div>
+      <div class="response-box visible">
+        <h1 id="dynamic-content-current">3rd</h1>
       </div>
     </div>
   </main>

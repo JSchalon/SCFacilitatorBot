@@ -11,10 +11,10 @@ ELEVENLABS_VOICE = "Freya" # Replace this with the name of whatever voice you ha
 
 BACKUP_FILE = "ChatHistoryBackup.txt"
 
-elevenlabs_manager = ElevenLabsManager()
+#elevenlabs_manager = ElevenLabsManager()
 speechtotext_manager = SpeechToTextManager()
 openai_manager = OpenAiManager()
-audio_manager = AudioManager()
+#audio_manager = AudioManager()
 
 # Create Flask-SocketIO server
 sio = socketio.Client()
@@ -54,6 +54,8 @@ print("[green]Starting the loop, press S to begin")
 sio.emit('message', '{"type": "animate", "msg": "speak"}')
 sio.emit('message', '{"type": "display", "msg": "Nu kan ni använda \'S\' för att börja prata med mig!"}')
 
+interactionIndex = 0
+
 while True:
     # Wait until user presses "S" key
     if keyboard.read_key() != "s":
@@ -61,7 +63,10 @@ while True:
         continue
 
     print("[green]User pressed S key! Now listening to your microphone:")
-    sio.emit('message', '{"type": "animate", "msg": "listen"}')
+    if interactionIndex > 0:
+        sio.emit('message', '{"type": "animate", "msg": "listen", "switch": true}')
+    else:
+        sio.emit('message', '{"type": "animate", "msg": "listen", "switch": false}')
 
     # Get question from mic
     mic_result = speechtotext_manager.speechtotext_from_mic_continuous()
@@ -82,15 +87,16 @@ while True:
         file.write(str(openai_manager.chat_history))
 
     # Send it to 11Labs to turn into cool audio
-    elevenlabs_output = elevenlabs_manager.text_to_audio(openai_result, ELEVENLABS_VOICE, False)
+    #elevenlabs_output = elevenlabs_manager.text_to_audio(openai_result, ELEVENLABS_VOICE, False)
     sio.emit('message', '{"type": "animate", "msg": "speak"}')
     message_string = '{"type": "display", "msg": "' + openai_result.replace('"', '\\"') + '"}'
     sio.emit('message', message_string)
     # Play the mp3 file
-    audio_manager.play_audio(elevenlabs_output, True, True, True)
+    #audio_manager.play_audio(elevenlabs_output, True, True, True)
     
 
     # Disable Pajama Sam pic in OBS
     #obswebsockets_manager.set_source_visibility("*** Mid Monitor", "Pajama Sam", False)
 
     print("[green]\n!!!!!!!\nFINISHED PROCESSING DIALOGUE.\nREADY FOR NEXT INPUT\n!!!!!!!\n")
+    interactionIndex += 1

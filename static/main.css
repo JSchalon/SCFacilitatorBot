@@ -1,6 +1,7 @@
 :root {
   --bg-main: #223843;
   --text-box: #D2694B;
+  --text-box-dark: #a06555;
   --bot-color: #EFF1F3;
   --bot-glow: #ffffff88;
   --text-main: #DDF0FF;
@@ -49,10 +50,6 @@ svg * {
   animation: loading-face 4s linear infinite;
 }
 
-.glow-group.speaking .bot-face {
-  transform: rotate(0deg)!important;
-}
-
 .bot-face {
   transition: transform .3s ease;
   transform-origin: center 40%;
@@ -69,7 +66,7 @@ svg * {
   }
 
   100% {
-    transform: rotate(360deg);
+    transform: rotate(-360deg);
   }
 }
 
@@ -200,6 +197,7 @@ div {
 }
 
 .response-box {
+  position: relative;
   display: flex;
   box-sizing: border-box;
   justify-content: center;
@@ -207,8 +205,37 @@ div {
   min-height: 20vh;
   max-height: calc(100vh - 270px);
   width: 100%;
-  background-color: var(--text-box);
+  background-color: var(--text-box-dark);
   border-radius: 20px;
   box-shadow: 0px 10px 41px -15px rgba(56, 28, 15, 0.75);
-  transition: min-height 0.15s ease-out;
+  transition: min-height 0.15s ease-out, margin .2s ease-out, transform .2s ease-out, opacity .1s ease-out;
+  transform: scale(.95);
+  margin-bottom: -15vh;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.response-box.visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+.response-box:hover:nth-child(1) {
+  margin-bottom: -5vh;
+  transform: scale(1);
+}
+
+.response-box:nth-child(2):hover {
+  transform: translateY(15vh);
+}
+
+.response-box:nth-child(3) {
+  opacity: 1;
+  transform: scale(1) translateY(-5vh);
+  z-index: 1;
+  background-color: var(--text-box);
+}
+
+.response-box:nth-child(2) {
+  transform: scale(.95) translateY(5vh);
 }
