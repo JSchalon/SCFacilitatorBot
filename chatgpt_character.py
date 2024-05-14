@@ -45,7 +45,7 @@ När du svarar måste du följa följande regler:
 7) Om det är nödvändigt att använda mer komplicerade ord, förklara dem.
 8) Du behöver inte förklara varför ett ämne är bra, du bara ställer den.
 9) Frågorna ska vara lämpliga för ett språkcafé och kan handla om Sverige men även om kultur, andra länder, politik eller andra ämnen, så länge de är lämpliga.
-10) Tilltala alltid människor som "ni" och använda "er/ert/era.
+10) Tilltala alltid människor som "ni" och använda "er/ert/era".
                         
 Okej, låt samtalet börja!'''}
 openai_manager.chat_history.append(FIRST_SYSTEM_MESSAGE)
