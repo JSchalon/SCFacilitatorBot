@@ -13,7 +13,7 @@ def index():
 def handle_message(message):
     print(message)
     json_object = json.loads(message)
-    if  (json_object.get("type") == "animate" or json_object.get("type") == "display") and json_object.get("msg"):
+    if  (json_object.get("type") == "animate" or json_object.get("type") == "display" or json_object.get("type") == "question") and json_object.get("msg"):
     # Broadcast the received message to all clients
         socketio.emit('message', json_object, namespace='/')
 

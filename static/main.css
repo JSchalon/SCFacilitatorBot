@@ -17,9 +17,13 @@ body {
 
 h1 {
   font-size: 1.4em;
-  margin: 1em;
+  padding: 1em;
   line-height: 1.6;
   font-weight: 500;
+  box-sizing: border-box;
+  margin: 0;
+  width: 100%;
+  text-align: center;
 }
 
 .app {
@@ -35,6 +39,15 @@ h1 {
 
 .invis {
   visibility: hidden;
+}
+
+h1.invis {
+  display: none;
+}
+
+#question-box {
+  font-style: italic;
+  padding-bottom: 0em;
 }
 
 svg * {
@@ -198,12 +211,9 @@ div {
 
 .response-box {
   position: relative;
-  display: flex;
   box-sizing: border-box;
-  justify-content: center;
-  align-items: center;
   min-height: 20vh;
-  max-height: calc(100vh - 270px);
+  max-height: 20vh;
   width: 100%;
   background-color: var(--text-box-dark);
   border-radius: 20px;
@@ -211,13 +221,17 @@ div {
   transition: min-height 0.15s ease-out, margin .2s ease-out, transform .2s ease-out, opacity .1s ease-out;
   transform: scale(.95);
   margin-bottom: -15vh;
-  visibility: hidden;
   opacity: 0;
+  flex-flow: wrap;
+  flex-shrink: 0;
+  flex-grow: 1;
+  pointer-events: none;
+  overflow: hidden;
 }
 
 .response-box.visible {
-  visibility: visible;
   opacity: 1;
+  pointer-events: all;
 }
 
 .response-box:hover:nth-child(1) {
@@ -225,17 +239,26 @@ div {
   transform: scale(1);
 }
 
-.response-box:nth-child(2):hover {
-  transform: translateY(15vh);
+.response-box:nth-child(1) {
+  align-items: start;
+  margin-bottom: -10vh;
 }
 
-.response-box:nth-child(3) {
+.response-box:nth-child(3):hover {
+  transform: translateY(0vh);
+}
+
+.response-box:nth-child(2) {
   opacity: 1;
   transform: scale(1) translateY(-5vh);
   z-index: 1;
   background-color: var(--text-box);
+  min-height: 20vh;
+  max-height: calc(100vh - 270px);
 }
 
-.response-box:nth-child(2) {
-  transform: scale(.95) translateY(5vh);
+.response-box:nth-child(3) {
+  transform: scale(.95) translateY(-5vh);
+  align-items: start;
+  z-index: 0;
 }
